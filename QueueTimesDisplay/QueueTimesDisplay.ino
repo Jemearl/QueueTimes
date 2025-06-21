@@ -4,8 +4,8 @@
 #include <TFT_eSPI.h>
 #include "DisneylandLogo_Small.h";
 
-const char* ssid = "SmithNet";
-const char* password = "RandomPuppy";
+const char* ssid = "";
+const char* password = "";
 
 TFT_eSPI tft = TFT_eSPI();
 
