@@ -4,6 +4,8 @@
 #include <TFT_eSPI.h>
 #include "DisneylandLogo_Small.h"
 #include "DCABW.h"
+#include "USH.h"
+#include "KBF.h"
 
 const char* ssid = "";
 const char* password = "";
@@ -32,11 +34,28 @@ void setup() {
 
 
 void loop() {
+/*
+  // Define IDs and their corresponding delays (in ms)
+  String parkIDs[] = {"61", "66", "17", "16"};
+  unsigned long delays[] = {10000, 10000, 10000, 20000};
+  const size_t numParks = sizeof(parkIDs) / sizeof(parkIDs[0]);
+
+  for (size_t i = 0; i < numParks; i++) {
+    fetchQueueTimes(parkIDs[i]);
+    delay(delays[i]);
+  }
+
+*/
+
 
 tft.setSwapBytes(true);
-fetchQueueTimes("17");
-delay(20000);
-fetchQueueTimes("16");
+fetchQueueTimes("16");  // Disneyland
+delay(10000);
+fetchQueueTimes("66");  // Universal Hollywood
+delay(10000);
+fetchQueueTimes("17");  // Disney California Adventure
+delay(10000);
+fetchQueueTimes("61");  // Knott's Berry Farm
 delay(20000);
 
 }
@@ -111,16 +130,36 @@ void fetchQueueTimes(String IDNum) {
             int fontColor = TFT_YELLOW;
             int waitTimeColor = TFT_WHITE;
             for (JsonObject ride : land["rides"].as<JsonArray>()) {
-               if (IDNum == "16") {
-                  tft.fillScreen(TFT_BLACK);
-                  fontColor = TFT_YELLOW;
-                  tft.pushImage(0,0,302,170,DisneylandLogo_Small);  // Disneyland Logo
-                }
-                else {
-                  tft.fillScreen(TFT_BLACK);
-                  fontColor = TFT_YELLOW;
-                  waitTimeColor = TFT_CYAN;
-                  tft.pushImage(0,30,320,165,DCABW);  // Disney California Advednture Logo
+                switch (IDNum.toInt()) {
+                  case 16: // Disneyland
+                    tft.fillScreen(TFT_BLACK);
+                    fontColor = TFT_YELLOW;
+                    tft.pushImage(0,0,302,170,DisneylandLogo_Small);  
+                    break;
+                  case 17:  // Disney California Adventure
+                    tft.fillScreen(TFT_BLACK);
+                    fontColor = TFT_YELLOW;
+                    waitTimeColor = TFT_CYAN;
+                    tft.pushImage(0,30,320,165,DCABW); 
+                  break;
+                  case 66: // Universal Hollywood
+                    tft.fillScreen(TFT_WHITE);
+                    fontColor = TFT_YELLOW;
+                    waitTimeColor = TFT_WHITE;
+                    tft.pushImage(0,0,320,151,USH);
+                    break;
+                  case 61: // Knott's Berry Farm
+                    tft.fillScreen(TFT_BLACK);
+                    fontColor = TFT_YELLOW;
+                    waitTimeColor = TFT_WHITE;
+                    tft.pushImage(75,0,170,170,KBF); 
+                    break;
+                  default:
+                    tft.fillScreen(TFT_BLACK);
+                    fontColor = TFT_YELLOW;
+                    waitTimeColor = TFT_CYAN;
+                    tft.pushImage(0,30,320,165,DCABW); 
+                    break;
                 }
                 tft.setTextDatum(MC_DATUM);
                 drawOutlinedText(land["name"].as<const char*>(), tft.width() / 2 , 15, TFT_GREEN, 2 );
@@ -132,6 +171,7 @@ void fetchQueueTimes(String IDNum) {
                 else
                 {
                   drawOutlinedText(ride["wait_time"].as<String>(), tft.width() / 2 , 130, waitTimeColor, 6 );
+                  drawOutlinedText("minute wait time", tft.width() / 2, 155, waitTimeColor, 2 );
                 }
                 //String testString = ride["name"].as<const char*>();
                tft.drawString(String(strlen(ride["name"].as<const char*>())) , tft.width() / 2 , 175, 2);
